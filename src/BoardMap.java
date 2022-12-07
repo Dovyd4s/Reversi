@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoardMap {
-    private int scorePlayer1 = 0;
-    private int scorePlayer2 = 0;
-   private char[][] map = new char[8][8];
+public class BoardMap implements StatsPrinter{
+   final static int BOARD_SIZE = 8;
+   private int scorePlayer1 = 0;
+   private int scorePlayer2 = 0;
+   private char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
    private int posX = 3;
    private int posY = 3;
    private int move = 0;
@@ -14,16 +15,16 @@ public class BoardMap {
    private final char player2Marker = 'X';
 
     public BoardMap() {
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
+        for(int i = 0; i < BOARD_SIZE; i++){
+            for(int j = 0; j < BOARD_SIZE; j++){
                 map[i][j]=' ';
             }
         }
     }
 
     public void printMap (){
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
+        for(int i = 0; i < BOARD_SIZE; i++){
+            for(int j = 0; j < BOARD_SIZE; j++){
                 if(posX == j && posY == i){
                     if(map[j][i]==' '){
                         System.out.print("{_}");
@@ -39,7 +40,8 @@ public class BoardMap {
             }
         }
     }
-    public void printInfo(){
+    @Override
+    public void printStats(){
         System.out.println("Move nr.: " + move);
         System.out.print("It's turn for: ");
         if(player1turnFlag){
@@ -53,7 +55,7 @@ public class BoardMap {
     }
 
     public boolean markAndChangeTurns() {
-        if((isContiguousToOpponent() && !flippableCoordinates(posX, posY).isEmpty()) || move<4) {
+        if((!flippableCoordinates(posX, posY).isEmpty()) || move<4) {
             if (map[posX][posY] == ' ') {
                 flipMarkers(flippableCoordinates(posX, posY));
                 if (player1turnFlag) {
@@ -69,178 +71,42 @@ public class BoardMap {
         return false;
     }
 
-    private boolean isContiguousToOpponent(){
-        boolean valid = false;
-        int xMin = posX;
-        if(xMin>0)xMin-=1;
-        int xMax = posX;
-        if(xMax<7) xMax+=1;
-        int yMin = posY;
-        if(yMin >0)yMin-=1;
-        int yMax = posY;
-        if(yMax<7)yMax+=1;
 
-        char opponentMarker = player1Marker;
-        if(player1turnFlag){
-            opponentMarker=player2Marker;
-        }
-
-        for(int i = yMin; i <=yMax; i++){
-            for(int j = xMin; j<=xMax; j++){
-                if(map[j][i]==opponentMarker){
-                    valid=true;
-                    break;
-                }
-            }
-        }
-        return valid;
-    }
-
-    private List<PairXY> flippableCoordinates(int posX, int posY){
+    private List<PairXY> flippableCoordinatesOnOneDirection(int posX, int posY, int dX, int dY, char opponentMarker, char playersMarker){
         List<PairXY> coordinatesToSwitch = new ArrayList<>();
         List<PairXY> temp = new ArrayList<>();
         boolean opponentMarkersTrapped = false;
+
+        for (int x = (posX + dX), y = (posY + dY); x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE; x+=dX, y+=dY) {
+            if (map[x][y] == opponentMarker) {
+                opponentMarkersTrapped = true;
+                temp.add(new PairXY(x, y));
+            } else {
+                if (map[x][y] == playersMarker) {
+                    if (opponentMarkersTrapped) {
+                        coordinatesToSwitch.addAll(temp);
+                    }
+                }
+                break;
+            }
+        }
+        return coordinatesToSwitch;
+    }
+
+
+    private List<PairXY> flippableCoordinates(int posX, int posY){
+        List<PairXY> coordinatesToSwitch = new ArrayList<>();
         char opponentMarker = player1Marker;
         char playersMarker = player2Marker;
         if(player1turnFlag){
             opponentMarker=player2Marker;
             playersMarker=player1Marker;
         }
-        for(int i = posY+1; i < 8; i++){
-            if(map[posX][i]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(posX, i));
-            } else if (map[posX][i]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
+        for(int i = -1; i<=1; i++){
+            for(int j = -1; j <=1; j++){
+                if(!(i==0 && j ==0)){
+                    coordinatesToSwitch.addAll(flippableCoordinatesOnOneDirection(posX,posY,i,j,opponentMarker,playersMarker));
                 }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int i = posY-1; i >= 0; i--){
-            if(map[posX][i]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(posX, i));
-            } else if (map[posX][i]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int i = posX-1; i >= 0; i--){
-            if(map[i][posY]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(i, posY));
-            } else if (map[i][posY]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int i = posX+1; i < 8; i++){
-            if(map[i][posY]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(i, posY));
-            } else if (map[i][posY]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                    temp.clear();
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-
-        //Diagonal:
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int x = posX+1, y = posY+1; x < 8 && y < 8; x++, y++){
-            if(map[x][y]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(x, y));
-            } else if (map[x][y]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                    temp.clear();
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int x = posX+1, y = posY-1; x < 8 && y >=0; x++, y--){
-            if(map[x][y]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(x, y));
-            } else if (map[x][y]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                    temp.clear();
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int x = posX-1, y = posY-1; x >= 0 && y >=0; x--, y--){
-            if(map[x][y]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(x, y));
-            } else if (map[x][y]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                    temp.clear();
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
-            }
-        }
-
-        temp.clear();
-        opponentMarkersTrapped=false;
-        for(int x = posX-1, y = posY+1; x >= 0 && y < 8; x--, y++){
-            if(map[x][y]==opponentMarker){
-                opponentMarkersTrapped = true;
-                temp.add(new PairXY(x, y));
-            } else if (map[x][y]==playersMarker) {
-                if(opponentMarkersTrapped){
-                    coordinatesToSwitch.addAll(temp);
-                    temp.clear();
-                }
-                break;
-            } else {
-                temp.clear();
-                break;
             }
         }
         return coordinatesToSwitch;
@@ -248,8 +114,8 @@ public class BoardMap {
 
     public boolean isPossibleToMakeMove(){
         boolean flag = false;
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
+        for(int i = 0; i < BOARD_SIZE; i++){
+            for(int j = 0; j < BOARD_SIZE; j++){
                 if(map[i][j]==' '){
                     if(!flippableCoordinates(i,j).isEmpty()){
                         flag = true;
