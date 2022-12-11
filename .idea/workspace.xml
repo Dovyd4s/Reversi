@@ -4,15 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="380736bc-0ffd-4fc3-a97c-9508db0efde6" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/BoardElement.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GameRules.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/StatsPrinter.java" afterDir="false" />
+    <list default="true" id="380736bc-0ffd-4fc3-a97c-9508db0efde6" name="Changes" comment="DRY'ed some code">
+      <change afterPath="$PROJECT_DIR$/src/BoardMapFlippableCoordinatesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BoardMapIsSelectorInCenterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/BoardMapMovementTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/GameState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/MapState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Selector.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Reversi.iml" beforeDir="false" afterPath="$PROJECT_DIR$/Reversi.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Reversi/BoardMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Reversi/BoardMap.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/Reversi/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/Reversi/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/Reversi/PairXY.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/BoardElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BoardElement.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/BoardMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BoardMap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameRules.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameRules.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PairXY.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CoordinatesXY.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,11 +36,25 @@
       <list>
         <option value="Interface" />
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="878dc110-5d93-41b2-bd32-991308538e72" />
+        <option name="url" value="https://github.com/Dovyd4s/Reversii.git" />
+      </UrlAndAccount>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -46,9 +69,16 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "create.test.in.the.same.root": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -56,17 +86,70 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
-    <configuration name="Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="Main" />
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.BoardMapFlippableCoordinatesTest">
+    <configuration name="BoardMapFlippableCoordinatesTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="Reversi" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="BoardMapFlippableCoordinatesTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BoardMapFlippableCoordinatesTest.flippableCoordinates" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Reversi" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="BoardMapFlippableCoordinatesTest" />
+      <option name="METHOD_NAME" value="flippableCoordinates" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BoardMapFlippableCoordinatesTest.flippableCoordinatesShouldBeEmpty" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Reversi" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="BoardMapFlippableCoordinatesTest" />
+      <option name="METHOD_NAME" value="flippableCoordinatesShouldBeEmpty" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BoardMapFlippableCoordinatesTest.flippableCoordinatesV3" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Reversi" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="BoardMapFlippableCoordinatesTest" />
+      <option name="METHOD_NAME" value="flippableCoordinatesV3" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BoardMapMovementTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="Reversi" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="BoardMapMovementTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.Main" />
+        <item itemvalue="JUnit.BoardMapFlippableCoordinatesTest" />
+        <item itemvalue="JUnit.BoardMapFlippableCoordinatesTest.flippableCoordinatesV3" />
+        <item itemvalue="JUnit.BoardMapFlippableCoordinatesTest.flippableCoordinatesShouldBeEmpty" />
+        <item itemvalue="JUnit.BoardMapFlippableCoordinatesTest.flippableCoordinates" />
+        <item itemvalue="JUnit.BoardMapMovementTest" />
       </list>
     </recent_temporary>
   </component>
@@ -109,5 +192,12 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="GameRules" memberName="gameOver" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
 </project>

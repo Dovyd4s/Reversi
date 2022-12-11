@@ -1,86 +1,58 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class BoardMap implements StatsPrinter{
+public class BoardMap {
+   final private Selector OPEN_SELECTOR = new Selector('{');
+   final private Selector CLOSE_SELECTOR = new Selector('}');
    final static int BOARD_SIZE = 8;
-   private int scorePlayer1 = 0;
-   private int scorePlayer2 = 0;
+   final int [] CENTER_POSITIONS = {3,4};
+   final char EMPTY_CELL_MARKER = ' ';
+   private CoordinatesXY selector = new CoordinatesXY(3,3);
    private char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
-   private int posX = 3;
-   private int posY = 3;
-   private int move = 0;
-   private boolean wasUnableToMoveLastTime = false;
-   private boolean player1turnFlag = true;
-   private final char player1Marker = 'O';
-   private final char player2Marker = 'X';
 
-    public BoardMap() {
+   public static BoardMap instance = null;
+    private BoardMap() {
         for(int i = 0; i < BOARD_SIZE; i++){
             for(int j = 0; j < BOARD_SIZE; j++){
-                map[i][j]=' ';
+                map[i][j]=EMPTY_CELL_MARKER;
             }
         }
     }
-
+    public static BoardMap getInstance(){
+        if(instance == null){
+            instance = new BoardMap();
+        }
+        return instance;
+    }
     public void printMap (){
         for(int i = 0; i < BOARD_SIZE; i++){
             for(int j = 0; j < BOARD_SIZE; j++){
-                if(posX == j && posY == i){
-                    if(map[j][i]==' '){
-                        System.out.print("{_}");
-                    }else{
-                    System.out.print("{"+map[j][i]+"}");
-                    }
+                if(selector.getX() == j && selector.getY() == i){
+                    System.out.print(OPEN_SELECTOR.getSymbolRed() + map[j][i] + CLOSE_SELECTOR.getSymbolRed());
                 }else{
                     System.out.print("["+map[j][i]+"]");
                 }
-                if(j == 7){
+                if(j == BOARD_SIZE-1){
                     System.out.println();
                 }
             }
         }
     }
-    @Override
-    public void printStats(){
-        System.out.println("Move nr.: " + move);
-        System.out.print("It's turn for: ");
-        if(player1turnFlag){
-            System.out.println(player1Marker);
-        }else{
-            System.out.println(player2Marker);
+    public void markAndFlipTrapped(char playersMarker, char opponentMarker){
+        if(map[selector.getX()][selector.getY()] == EMPTY_CELL_MARKER){
+            flipMarkers(flippableCoordinates(opponentMarker, playersMarker),playersMarker);
+            map[selector.getX()][selector.getY()] = playersMarker;
         }
-        countScores();
-        System.out.println("Player's 1 (" + player1Marker + ") score: " + scorePlayer1);
-        System.out.println("Player's 2 (" + player2Marker + ") score: " + scorePlayer2);
     }
-
-    public boolean markAndChangeTurns() {
-        if((!flippableCoordinates(posX, posY).isEmpty()) || move<4) {
-            if (map[posX][posY] == ' ') {
-                flipMarkers(flippableCoordinates(posX, posY));
-                if (player1turnFlag) {
-                    map[posX][posY] = player1Marker;
-                } else {
-                    map[posX][posY] = player2Marker;
-                }
-                move+=1;
-                changeTurn();
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    private List<PairXY> flippableCoordinatesOnOneDirection(int posX, int posY, int dX, int dY, char opponentMarker, char playersMarker){
-        List<PairXY> coordinatesToSwitch = new ArrayList<>();
-        List<PairXY> temp = new ArrayList<>();
+    private List<CoordinatesXY> flippableCoordinatesOnOneDirection(CoordinatesXY coordinates, int dX, int dY, char opponentMarker, char playersMarker){
+        List<CoordinatesXY> coordinatesToSwitch = new ArrayList<>();
+        List<CoordinatesXY> temp = new ArrayList<>();
         boolean opponentMarkersTrapped = false;
 
-        for (int x = (posX + dX), y = (posY + dY); x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE; x+=dX, y+=dY) {
+        for (int x = (coordinates.getX() + dX), y = (coordinates.getY() + dY); x >= 0 && x < BOARD_SIZE && y >= 0 && y < BOARD_SIZE; x+=dX, y+=dY) {
             if (map[x][y] == opponentMarker) {
                 opponentMarkersTrapped = true;
-                temp.add(new PairXY(x, y));
+                temp.add(new CoordinatesXY(x, y));
             } else {
                 if (map[x][y] == playersMarker) {
                     if (opponentMarkersTrapped) {
@@ -92,101 +64,117 @@ public class BoardMap implements StatsPrinter{
         }
         return coordinatesToSwitch;
     }
+    public List<CoordinatesXY> flippableCoordinates(CoordinatesXY coordinates, char opponentMarker, char playersMarker){
+        List<CoordinatesXY> coordinatesToSwitch = new ArrayList<>();
+        int [] deltaValues = {-1,0,1};
 
-
-    private List<PairXY> flippableCoordinates(int posX, int posY){
-        List<PairXY> coordinatesToSwitch = new ArrayList<>();
-        char opponentMarker = player1Marker;
-        char playersMarker = player2Marker;
-        if(player1turnFlag){
-            opponentMarker=player2Marker;
-            playersMarker=player1Marker;
-        }
-        for(int i = -1; i<=1; i++){
-            for(int j = -1; j <=1; j++){
-                if(!(i==0 && j ==0)){
-                    coordinatesToSwitch.addAll(flippableCoordinatesOnOneDirection(posX,posY,i,j,opponentMarker,playersMarker));
+        for(int dY : deltaValues){
+            for(int dX : deltaValues){
+                if(!(dX == 0 && dY == 0)){
+                    coordinatesToSwitch.addAll(flippableCoordinatesOnOneDirection(coordinates,dX,dY,opponentMarker,playersMarker));
                 }
             }
         }
         return coordinatesToSwitch;
     }
+    public List<CoordinatesXY> flippableCoordinates(char opponentMarker, char playersMarker){
+        List<CoordinatesXY> coordinatesToSwitch = new ArrayList<>();
+        int [] deltaValues = {-1,0,1};
 
-    public boolean isPossibleToMakeMove(){
+        for(int dY : deltaValues){
+            for(int dX : deltaValues){
+                if(!(dX == 0 && dY == 0)){
+                    coordinatesToSwitch.addAll(flippableCoordinatesOnOneDirection(selector,dX,dY,opponentMarker,playersMarker));
+                }
+            }
+        }
+        return coordinatesToSwitch;
+    }
+    public boolean isPossibleToMakeMove(char opponentSymbol, char playersSymbol){
         boolean flag = false;
+        CoordinatesXY coordinates = new CoordinatesXY(0,0);
         for(int i = 0; i < BOARD_SIZE; i++){
+            coordinates.setY(i);
             for(int j = 0; j < BOARD_SIZE; j++){
-                if(map[i][j]==' '){
-                    if(!flippableCoordinates(i,j).isEmpty()){
+                coordinates.setX(j);
+                if(map[i][j]==EMPTY_CELL_MARKER){
+                    if(!flippableCoordinates(coordinates, opponentSymbol, playersSymbol).isEmpty()){
                         flag = true;
+                        break;
                     }
                 }
             }
         }
         return flag;
     }
-
-    public void changeTurn(){
-        if (player1turnFlag) {
-            player1turnFlag = false;
-        } else {
-            player1turnFlag = true;
+    public boolean isSelectorOnEmptyCell(){
+        if(map[selector.getX()][selector.getY()]==EMPTY_CELL_MARKER){
+            return true;
+        }else return false;
+    }
+    private void flipMarkers(List<CoordinatesXY> coordinatesList, char playersMarker){
+        for(CoordinatesXY pair : coordinatesList){
+            map[pair.getX()][pair.getY()]=playersMarker;
         }
     }
-
-    private void flipMarkers(List<PairXY> coordinatesList){
-        for(PairXY pair : coordinatesList){
-            if(player1turnFlag){
-                map[pair.getX()][pair.getY()]=player1Marker;
-            }else{
-                map[pair.getX()][pair.getY()]=player2Marker;
-            }
-        }
-    }
-
-    private void countScores(){
-        scorePlayer1 = 0;
-        scorePlayer2 = 0;
+    public int countSymbolsInMap(char symbol){
+        int count = 0;
         for(int i = 0; i < 8; i ++){
             for(int j = 0 ; j < 8; j++){
-                if(map[i][j]==player1Marker){
-                    scorePlayer1++;
-                }else if(map[i][j]==player2Marker){
-                    scorePlayer2++;
+                if(map[i][j]==symbol){
+                    count++;
                 }
             }
         }
+        return count;
     }
-
-    public int getPosX() {
-        return posX;
-    }
-
-    public void setPosX(int posX) {
-        if(move<4){
-            if(posX==3 || posX==4){
-                this.posX=posX;
-            }
-        }else if(posX>=0 && posX<=7){
-            this.posX = posX;
+    public void moveUp(){
+        if(selector.getY()>0){
+            selector.setY(selector.getY()-1);
         }
     }
-
-    public int getPosY() {
-        return posY;
-    }
-
-    public void setPosY(int posY) {
-        if(move<4){
-            if(posY==3 || posY==4){
-                this.posY = posY;
-            }
-        }else if(posY>=0 && posY <=7){
-            this.posY = posY;
+    public void moveDown(){
+        if(selector.getY()<BOARD_SIZE-1){
+            selector.setY(selector.getY()+1);
         }
     }
-
-    public int getMove() {
-        return move;
+    public void moveRight(){
+        if(selector.getX()<BOARD_SIZE-1){
+            selector.setX(selector.getX()+1);
+        }
+    }
+    public CoordinatesXY getSelector() {
+        return selector;
+    }
+    public void moveLeft(){
+        if(selector.getX()>0){
+            selector.setX(selector.getX()-1);
+        }
+    }
+    public boolean isSelectorInCentre(){
+        boolean xInCenter = false;
+        boolean yInCenter = false;
+        for(int x: CENTER_POSITIONS){
+            if (selector.getX()==x){
+                xInCenter=true;
+            }
+            if(selector.getY()==x){
+                yInCenter=true;
+            }
+        }
+        return (xInCenter&&yInCenter);
+    }
+    public MapState save(){
+        return new MapState(map,selector);
+    }
+    public void restore (MapState mapState){
+        this.map = mapState.getMap();
+        this.selector = mapState.getSelector();
+    }
+    public char[][] getMap() {
+        return map;
+    }
+    public void setMap(char[][] map) {
+        this.map = map;
     }
 }

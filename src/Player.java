@@ -5,6 +5,14 @@ public class Player extends BoardElement implements StatsPrinter{
         super(symbol);
     }
 
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
     @Override
     void printSymbol() {
 
